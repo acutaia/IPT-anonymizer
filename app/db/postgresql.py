@@ -92,7 +92,7 @@ class DataBase:
         Create a connection pool to the database
         """
         settings = get_database_settings()
-        print(settings.connection_number)
+
         cls.pool = await create_pool(
             user=settings.postgres_user,
             password=settings.postgres_pwd,
