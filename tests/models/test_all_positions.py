@@ -101,7 +101,7 @@ class TestAllPositions:
         data = AllPositions(company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE)
         assert data._query_company_extraction == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
 
-    def test_partial_mobility_type_extraction(self):
+    def test_type_detection_extraction(self):
         data = AllPositions(type_mobility=TYPE_MOBILITY, type_detection=TYPE_DETECTION)
         assert f"""'{TYPE_MOBILITY}' = "type" AND """ in data._query_external
         assert data._query_type_detection_extraction

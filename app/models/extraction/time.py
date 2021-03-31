@@ -22,23 +22,14 @@ Time Extraction models
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from abc import ABC
 
 # Standard Library
-from typing import Optional, Literal
+from typing import Optional
 
 # Third Party
-from pydantic import Field, validator, confloat, PrivateAttr
+from pydantic import validator
 
 # Internal
-from ..track import (
-    RequestType,
-    DetectionType,
-    MobilityType,
-    AggregationType,
-    TypeDay,
-    TypeOfTrack,
-)
 from ..model import OrjsonModel
 
 # --------------------------------------------------------------------------------------------
