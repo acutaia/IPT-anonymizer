@@ -1,8 +1,9 @@
 # App requirements
-fastapi[all]>=0.63.0
-gunicorn>=20.0.4
+asyncpg==0.21.0
 aiologger>=0.6.0
 Cython>=0.29.22
+fastapi[all]>=0.63.0
+gunicorn>=20.0.4
 
 # Testing requirements
 codecov>=2.1.11
