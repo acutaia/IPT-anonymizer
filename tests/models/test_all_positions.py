@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Partial Mobility Model
+Test All Positions Model
 
 :author: Angelo Cutaia
 :copyright: Copyright 2021, Angelo Cutaia
@@ -30,83 +30,86 @@ import pytest
 from pydantic import ValidationError
 
 # Internal
-from app.models.extraction.data_extraction.partial_mobility import PartialMobility
+from app.models.extraction.data_extraction.all_positions import AllPositions
 from .constants import *
 
 # ----------------------------------------------------------------------------------------
 
 
-class TestPartialMobility:
+class TestAllPositions:
     def test_no_extra_request(self):
-        data = PartialMobility()
+        data = AllPositions()
         assert data._query_select is not None
 
     def test_start_time_extraction(self):
-        data = PartialMobility(start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
+        data = AllPositions(start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
 
         assert data._query_start_time_extraction == f"start_date BETWEEN {START_TIME} AND {START_TIME + START_TIME_HIGH_THRESHOLD}"
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            PartialMobility(start_time=START_TIME)
+            AllPositions(start_time=START_TIME)
 
         with pytest.raises(ValidationError):
-            PartialMobility(start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
+            AllPositions(start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
 
     def test_end_time_extraction(self):
-        data = PartialMobility(end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
+        data = AllPositions(end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
 
         assert data._query_end_time_extraction == f"end_date BETWEEN {END_TIME} AND {END_TIME + END_TIME_HIGH_THRESHOLD}"
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            PartialMobility(end_time=END_TIME)
+            AllPositions(end_time=END_TIME)
 
         with pytest.raises(ValidationError):
-            PartialMobility(end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
+            AllPositions(end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
 
     def test_start_coordinates_extraction(self):
-        data = PartialMobility(start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS)
+        data = AllPositions(start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS)
 
         assert data._query_start_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            PartialMobility(start_lat=START_LAT)
+            AllPositions(start_lat=START_LAT)
 
         with pytest.raises(ValidationError):
-            PartialMobility(start_lon=START_LON)
+            AllPositions(start_lon=START_LON)
 
         with pytest.raises(ValidationError):
-            PartialMobility(start_lat=START_LAT, start_lon=START_LON)
+            AllPositions(start_lat=START_LAT, start_lon=START_LON)
 
         with pytest.raises(ValidationError):
-            PartialMobility(start_lon=START_LON, start_radius=START_RADIUS)
+            AllPositions(start_lon=START_LON, start_radius=START_RADIUS)
 
     def test_end_coordinates_extraction(self):
 
-        data = PartialMobility(end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS)
+        data = AllPositions(end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS)
         assert data._query_end_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            PartialMobility(end_lat=END_LAT)
+            AllPositions(end_lat=END_LAT)
 
         with pytest.raises(ValidationError):
-            PartialMobility(end_lon=END_LON)
+            AllPositions(end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            PartialMobility(end_lat=END_LAT, end_lon=END_LON)
+            AllPositions(end_lat=END_LAT, end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            PartialMobility(end_lon=END_LON, end_radius=END_RADIUS)
+            AllPositions(end_lon=END_LON, end_radius=END_RADIUS)
 
     def test_company_extraction(self):
-        data = PartialMobility(company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE)
+        data = AllPositions(company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE)
         assert data._query_company_extraction == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
 
     def test_partial_mobility_type_extraction(self):
-        data = PartialMobility(type_mobility=TYPE_MOBILITY, type_aggregation=TYPE_AGGREGATION)
-        assert data._query_type_mobility_extract
+        data = AllPositions(type_mobility=TYPE_MOBILITY, type_detection=TYPE_DETECTION)
+        assert f"""'{TYPE_MOBILITY}' = "type" AND """ in data._query_external
+        assert data._query_type_detection_extraction
 
-        with pytest.raises(ValidationError):
-            PartialMobility(type_mobility=TYPE_MOBILITY)
+        data = AllPositions(type_mobility=TYPE_MOBILITY)
+        assert f"""'{TYPE_MOBILITY}' = "type" """ in data._query_external
+        assert data._query_type_detection_extraction is None
 
-        with pytest.raises(ValidationError):
-            PartialMobility(type_aggregation=TYPE_AGGREGATION)
+        data = AllPositions(type_detection=TYPE_DETECTION)
+        assert data._query_type_detection_extraction
+
