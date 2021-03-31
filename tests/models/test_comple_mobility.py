@@ -42,9 +42,14 @@ class TestCompleteMobility:
         assert data._query_select is not None
 
     def test_start_time_extraction(self):
-        data = CompleteMobility(start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
+        data = CompleteMobility(
+            start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+        )
 
-        assert data._query_start_time_extraction == f"start_date BETWEEN {START_TIME} AND {START_TIME + START_TIME_HIGH_THRESHOLD}"
+        assert (
+            data._query_start_time_extraction
+            == f"start_date BETWEEN {START_TIME} AND {START_TIME + START_TIME_HIGH_THRESHOLD}"
+        )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
             CompleteMobility(start_time=START_TIME)
@@ -53,9 +58,14 @@ class TestCompleteMobility:
             CompleteMobility(start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
 
     def test_end_time_extraction(self):
-        data = CompleteMobility(end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
+        data = CompleteMobility(
+            end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD
+        )
 
-        assert data._query_end_time_extraction == f"end_date BETWEEN {END_TIME} AND {END_TIME + END_TIME_HIGH_THRESHOLD}"
+        assert (
+            data._query_end_time_extraction
+            == f"end_date BETWEEN {END_TIME} AND {END_TIME + END_TIME_HIGH_THRESHOLD}"
+        )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
             CompleteMobility(end_time=END_TIME)
@@ -64,7 +74,9 @@ class TestCompleteMobility:
             CompleteMobility(end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
 
     def test_start_coordinates_extraction(self):
-        data = CompleteMobility(start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS)
+        data = CompleteMobility(
+            start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS
+        )
 
         assert data._query_start_coordinate_extraction
         # Both value must be set or unset
@@ -98,11 +110,18 @@ class TestCompleteMobility:
             CompleteMobility(end_lon=END_LON, end_radius=END_RADIUS)
 
     def test_company_extraction(self):
-        data = CompleteMobility(company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE)
-        assert data._query_company_extraction == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
+        data = CompleteMobility(
+            company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE
+        )
+        assert (
+            data._query_company_extraction
+            == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
+        )
 
     def test_type_detection_extraction(self):
-        data = CompleteMobility(type_mobility=TYPE_MOBILITY, type_detection=TYPE_DETECTION)
+        data = CompleteMobility(
+            type_mobility=TYPE_MOBILITY, type_detection=TYPE_DETECTION
+        )
         assert f"""'{TYPE_MOBILITY}' = "type" AND """ in data._query_external
         assert data._query_type_detection_extraction
 
@@ -112,4 +131,3 @@ class TestCompleteMobility:
 
         data = CompleteMobility(type_detection=TYPE_DETECTION)
         assert data._query_type_detection_extraction
-

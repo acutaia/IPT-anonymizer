@@ -54,15 +54,13 @@ class TestIoT:
         with TestClient(app) as client:
             # Store data
             response = client.post(
-                "http://localhost/ipt_anonymizer/api/v1/iot/store",
-                json=IoT_INPUT_DATA
+                "http://localhost/ipt_anonymizer/api/v1/iot/store", json=IoT_INPUT_DATA
             )
             assert response.status_code == status.HTTP_200_OK
 
             # try to store again the same data
             response = client.post(
-                "http://localhost/ipt_anonymizer/api/v1/iot/store",
-                json=IoT_INPUT_DATA
+                "http://localhost/ipt_anonymizer/api/v1/iot/store", json=IoT_INPUT_DATA
             )
             assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -74,31 +72,27 @@ class TestIoT:
             # Extract data
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/iot/extract",
-                json={
-                    "observationGEPid": IoT_INPUT_DATA["observationGEPid"]
-                }
+                json={"observationGEPid": IoT_INPUT_DATA["observationGEPid"]},
             )
             assert response.status_code == status.HTTP_200_OK
             assert response.json() == {
-                                        "result_time": IoT_INPUT_DATA["resultTime"],
-                                        "datastream": IoT_INPUT_DATA["Datastream"]["@iot.id"],
-                                        "feature_of_interest": IoT_INPUT_DATA["FeatureOfInterest"]["@iot.id"],
-                                        "phenomenon_time": IoT_INPUT_DATA["phenomenonTime"],
-                                        "observation_gep_id": IoT_INPUT_DATA["observationGEPid"],
-                                        "result_auth": IoT_INPUT_DATA["result"]["authenticity"],
-                                        "value_type": IoT_INPUT_DATA["result"]["valueType"],
-                                        "position_type": IoT_INPUT_DATA["result"]["Position"]["type"],
-                                        "position_lat": IoT_INPUT_DATA["result"]["Position"]["coordinate"][0],
-                                        "position_lon": IoT_INPUT_DATA["result"]["Position"]["coordinate"][1],
-                                        "response_value": IoT_INPUT_DATA["result"]["response"]["value"]
-                                    }
+                "result_time": IoT_INPUT_DATA["resultTime"],
+                "datastream": IoT_INPUT_DATA["Datastream"]["@iot.id"],
+                "feature_of_interest": IoT_INPUT_DATA["FeatureOfInterest"]["@iot.id"],
+                "phenomenon_time": IoT_INPUT_DATA["phenomenonTime"],
+                "observation_gep_id": IoT_INPUT_DATA["observationGEPid"],
+                "result_auth": IoT_INPUT_DATA["result"]["authenticity"],
+                "value_type": IoT_INPUT_DATA["result"]["valueType"],
+                "position_type": IoT_INPUT_DATA["result"]["Position"]["type"],
+                "position_lat": IoT_INPUT_DATA["result"]["Position"]["coordinate"][0],
+                "position_lon": IoT_INPUT_DATA["result"]["Position"]["coordinate"][1],
+                "response_value": IoT_INPUT_DATA["result"]["response"]["value"],
+            }
 
             # try to extract data that aren't in the database
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/iot/extract",
-                json={
-                    "observationGEPid": "FAKE_NOT_FOUND"
-                }
+                json={"observationGEPid": "FAKE_NOT_FOUND"},
             )
             assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -115,14 +109,14 @@ class TestUser:
             # Store data
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/user/store",
-                json=USER_INPUT_DATA
+                json=USER_INPUT_DATA,
             )
             assert response.status_code == status.HTTP_200_OK
 
             # try to store again the same data
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/user/store",
-                json=USER_INPUT_DATA
+                json=USER_INPUT_DATA,
             )
             assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -132,11 +126,11 @@ class TestUser:
 
         with TestClient(app) as client:
             for mobility in (
-                    RequestType.partial_mobility,
-                    RequestType.complete_mobility,
-                    RequestType.all_positions,
-                    RequestType.stats_avg_space,
-                    RequestType.stats_num_tracks
+                RequestType.partial_mobility,
+                RequestType.complete_mobility,
+                RequestType.all_positions,
+                RequestType.stats_avg_space,
+                RequestType.stats_num_tracks,
             ):
                 # Extract data
                 response = client.post(
@@ -144,8 +138,9 @@ class TestUser:
                     json={
                         "request": mobility,
                         "company_code": USER_INPUT_DATA["company_code"],
-                        "type_aggregation": "space"
-                    }
+                        "type_aggregation": "space",
+                        "type_mobility": "bicycle",
+                    },
                 )
                 assert response.status_code == status.HTTP_200_OK
 
@@ -155,8 +150,9 @@ class TestUser:
                     json={
                         "request": mobility,
                         "company_code": "FAKE_NOT_FOUND",
-                        "type_aggregation": "space"
-                    }
+                        "type_aggregation": "space",
+                        "type_mobility": "bicycle",
+                    },
                 )
                 assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -166,7 +162,7 @@ class TestUser:
                 json={
                     "request": "FAKE",
                     "company_code": "FAKE_NOT_FOUND",
-                    "type_aggregation": "space"
-                }
+                    "type_aggregation": "space",
+                },
             )
             assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
