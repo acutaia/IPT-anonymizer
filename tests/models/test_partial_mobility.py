@@ -112,13 +112,8 @@ class TestPartialMobility:
             PartialMobility(type_aggregation=TYPE_AGGREGATION)
 
     def test_type_detection_extraction(self):
-        data = PartialMobility(type_mobility=TYPE_MOBILITY, type_detection=TYPE_DETECTION)
-        assert f"""'{TYPE_MOBILITY}' = "type" AND """ in data._query_external
-        assert data._query_type_detection_extraction
-
-        data = PartialMobility(type_mobility=TYPE_MOBILITY)
-        assert f"""'{TYPE_MOBILITY}' = "type" """ in data._query_external
-        assert data._query_type_detection_extraction is None
+        data = PartialMobility(type_mobility=TYPE_MOBILITY, type_aggregation=TYPE_AGGREGATION, type_detection=TYPE_DETECTION)
+        assert f"{data._query_type_mobility_extract} AND {data._query_type_detection_extraction}" in data._query_external
 
         data = PartialMobility(type_detection=TYPE_DETECTION)
-        assert data._query_type_detection_extraction
+        assert data._query_type_detection_extraction in data._query_external
