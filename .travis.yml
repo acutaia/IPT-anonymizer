@@ -1,0 +1,36 @@
+os: linux
+
+addons:
+  postgresql: "12"
+  apt:
+    packages:
+      - build-essential
+      - python3-dev
+      - postgresql-12
+      - postgresql-client-12
+env:
+  global:
+    - PGPORT=5432
+    - PGUSER=postgres
+    - PGPASSWORD=postgres
+
+cache:
+    pip: true
+
+language: "python"
+python:
+  - "3.8"
+  - "3.9"
+
+install:
+  - pip install -r dev-requirements.txt
+
+before_script:
+  - python3 setup.py build_ext --inplace
+  - python3 setup_database.py
+
+script:
+  - pytest --cov=app tests
+
+after_success:
+  - codecov -t 12cf570a-7fe2-41f1-8229-579cd9085f8d
