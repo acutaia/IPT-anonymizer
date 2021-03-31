@@ -28,10 +28,8 @@ import asyncio
 import time
 
 # Internal
-from .lbs import get_lbs_route, post_lbs_route
 from ..models.track import RequestType
-from ..models.security import Authenticity
-from ..models.user_feed.user import UserFeedInternal, PositionObject
+from ..models.user_feed.user import UserFeedInternal
 from ..db.postgresql import get_database
 
 # --------------------------------------------------------------------------------------------
