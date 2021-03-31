@@ -31,7 +31,8 @@ from fastapi import status
 
 # Internal
 from app.main import app
-from .constants import IoT_INPUT_DATA
+from app.models.track import RequestType
+from .constants import IoT_INPUT_DATA, USER_INPUT_DATA
 from .logger import disable_logger
 
 # ---------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ class TestIoT:
             assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
     def test_extract(self):
-        """Test the behaviour of store IoT data"""
+        """Test the behaviour of extract IoT data"""
         clear_test()
 
         with TestClient(app) as client:
@@ -92,7 +93,7 @@ class TestIoT:
                                         "response_value": IoT_INPUT_DATA["result"]["response"]["value"]
                                     }
 
-            # try to store again the same data
+            # try to extract data that aren't in the database
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/iot/extract",
                 json={
@@ -100,3 +101,72 @@ class TestIoT:
                 }
             )
             assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestUser:
+    """Test User router"""
+
+    def test_store(self):
+        """Test the behaviour of store User data"""
+
+        clear_test()
+
+        with TestClient(app) as client:
+            # Store data
+            response = client.post(
+                "http://localhost/ipt_anonymizer/api/v1/user/store",
+                json=USER_INPUT_DATA
+            )
+            assert response.status_code == status.HTTP_200_OK
+
+            # try to store again the same data
+            response = client.post(
+                "http://localhost/ipt_anonymizer/api/v1/user/store",
+                json=USER_INPUT_DATA
+            )
+            assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def test_extract(self):
+        """Test the behaviour of extract User data"""
+        clear_test()
+
+        with TestClient(app) as client:
+            for mobility in (
+                    RequestType.partial_mobility,
+                    RequestType.complete_mobility,
+                    RequestType.all_positions,
+                    RequestType.stats_avg_space,
+                    RequestType.stats_num_tracks
+            ):
+                # Extract data
+                response = client.post(
+                    "http://localhost/ipt_anonymizer/api/v1/user/extract",
+                    json={
+                        "request": mobility,
+                        "company_code": USER_INPUT_DATA["company_code"],
+                        "type_aggregation": "space"
+                    }
+                )
+                assert response.status_code == status.HTTP_200_OK
+
+                # try to extract data that aren't in the database
+                response = client.post(
+                    "http://localhost/ipt_anonymizer/api/v1/user/extract",
+                    json={
+                        "request": mobility,
+                        "company_code": "FAKE_NOT_FOUND",
+                        "type_aggregation": "space"
+                    }
+                )
+                assert response.status_code == status.HTTP_404_NOT_FOUND
+
+            # try to extract data that aren't in the database
+            response = client.post(
+                "http://localhost/ipt_anonymizer/api/v1/user/extract",
+                json={
+                    "request": "FAKE",
+                    "company_code": "FAKE_NOT_FOUND",
+                    "type_aggregation": "space"
+                }
+            )
+            assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

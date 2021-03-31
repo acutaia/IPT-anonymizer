@@ -55,3 +55,118 @@ IoT_INPUT_DATA = {
     },
     "observationGEPid": str(uuid.uuid4())
 }
+
+# ---------------------------------------------------------------------------------------------
+
+USER_INPUT_DATA = {
+    "source_app": "travis",
+    "behaviour": {
+
+        "app_defined": [
+
+        ],
+        "tpv_defined": [
+
+        ],
+        "user_defined": [
+        {
+        "end": {
+        "authenticity": -1,
+        "lat": 45.0704191,
+        "lon": 7.4716152,
+        "partialDistance": 20,
+        "time": 1611819719151
+        },
+        "meters": 1939,
+        "start": {
+        "authenticity": -1,
+        "lat": 45.0704091,
+        "lon": 7.4716152,
+        "partialDistance": 10,
+        "time": 1611819619151
+        },
+        "type": "bicycle"
+        },
+        {
+        "end": {
+        "authenticity": -1,
+        "lat": 45.0704291,
+        "lon": 7.4716152,
+        "partialDistance": 50,
+        "time": 1611820019151
+        },
+        "meters": 1939,
+        "start": {
+        "authenticity": -1,
+        "lat": 45.0704291,
+        "lon": 7.4716152,
+        "partialDistance": 30,
+        "time": 1611819819151
+        },
+        "type": "walk"
+        }
+        ]
+    },
+    "company_code": str(uuid.uuid4()),
+    "company_trip_type": "",
+    "distance": 1939,
+    "elapsedTime": "0:16:15",
+    "endDate": 1611820019151,
+    "id": str(uuid.uuid4()),
+    "journey_id": str(uuid.uuid4()),
+    "mainTypeSpace": "bicycle",
+    "mainTypeTime": "bicycle",
+    "sensors_information": [
+
+        {
+            "data": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 8.0
+            },
+            "name": "accellerometer",
+            "time": 1611819561195
+        }
+
+    ],
+    "startDate": 1611819619151,
+    "trace_information": [
+
+        {
+            "authenticity": -1,
+            "lat": 45.0704091,
+            "lon": 7.4716152,
+            "partialDistance": 10,
+            "time": 1611819619151
+        },
+        {
+            "authenticity": -1,
+            "lat": 45.0704191,
+            "lon": 7.4716152,
+            "partialDistance": 20,
+            "time": 1611819719151
+        },
+        {
+            "authenticity": -1,
+            "lat": 45.0704291,
+            "lon": 7.4716152,
+            "partialDistance": 30,
+            "time": 1611819819151
+        },
+        {
+            "authenticity": -1,
+            "lat": 45.0704291,
+            "lon": 7.4716152,
+            "partialDistance": 40,
+            "time": 1611819919151
+        },
+        {
+            "authenticity": -1,
+            "lat": 45.0704291,
+            "lon": 7.4716152,
+            "partialDistance": 50,
+            "time": 1611820019151
+        }
+
+    ]
+}
