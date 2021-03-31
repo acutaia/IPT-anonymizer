@@ -288,7 +288,7 @@ class DataBase:
                 result = await conn.fetchrow(
                     f"""SELECT * from "iot_data" WHERE observation_gep_id = '{observation_gep_id}';"""
                 )
-                if len(result) == 0:
+                if result is None:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
                         detail={
