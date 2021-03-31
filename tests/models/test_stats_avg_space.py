@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test All Positions Model
+Test Stats Avg Space Model
 
 :author: Angelo Cutaia
 :copyright: Copyright 2021, Angelo Cutaia
