@@ -132,7 +132,6 @@ class TestUser:
                 RequestType.stats_avg_space,
                 RequestType.stats_num_tracks,
             ):
-                print(mobility)
                 # Extract data
                 response = client.post(
                     "http://localhost/ipt_anonymizer/api/v1/user/extract",
@@ -156,6 +155,18 @@ class TestUser:
                     },
                 )
                 assert response.status_code == status.HTTP_404_NOT_FOUND
+
+            # try to extract a list of data
+            for mobility in (RequestType.partial_mobility, RequestType.all_positions):
+                # Extract data
+                response = client.post(
+                    "http://localhost/ipt_anonymizer/api/v1/user/extract",
+                    json={
+                        "request": mobility,
+                        "company_code": USER_INPUT_DATA["company_code"],
+                    },
+                )
+                assert response.status_code == status.HTTP_200_OK
 
             # try to extract data that aren't in the database
             response = client.post(
