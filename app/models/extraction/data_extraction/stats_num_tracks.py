@@ -60,13 +60,15 @@ class StatsNumTracks(
         """
         SELECT Distinct(main_type_time),
         count(*) 
-        FROM "user_data" WHERE"""
+        FROM "user_data" WHERE
+        """
     )
     _query_select_main_type_space = PrivateAttr(
         """
         SELECT Distinct(main_type_space),
         count(*) 
-        FROM "user_data" WHERE"""
+        FROM "user_data" WHERE
+        """
     )
     _query_external: str = PrivateAttr("")
     _query_external_main_type_time: str = PrivateAttr("GROUP BY main_type_time")
@@ -78,43 +80,43 @@ class StatsNumTracks(
     def __init__(self, **data):
         super().__init__(**data)
         if self.type_aggregation == AggregationType.time:
-            self._query_select = self._query_select_main_type_time
+            self._query_select = f"{self._query_select_main_type_time} {self._query_company_extraction}"
             self._query_external = self._query_external_main_type_time
         else:
-            self._query_select = self._query_select_main_type_space
+            self._query_select = f"{self._query_select_main_type_space} {self._query_company_extraction}"
             self._query_external = self._query_external_main_type_space
 
         if self._query_start_time_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_start_time_extraction} AND"
+                f"{self._query_select} AND {self._query_start_time_extraction}"
             )
 
         if self._query_end_time_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_end_time_extraction} AND"
+                f"{self._query_select} AND {self._query_end_time_extraction}"
             )
 
         if self._query_start_coordinate_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_start_coordinate_extraction} AND"
+                f"{self._query_select} AND {self._query_start_coordinate_extraction}"
             )
 
         if self._query_end_coordinate_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_end_coordinate_extraction} AND"
+                f"{self._query_select} AND {self._query_end_coordinate_extraction}"
             )
 
         if self.type_mobility and self._query_type_detection_extraction:
-            self._query_external = f""" '{self.type_mobility}' = "main_type_{self.type_aggregation}" AND {self._query_type_detection_extraction} {self._query_external}"""
+            self._query_external = f""" AND '{self.type_mobility}' = "main_type_{self.type_aggregation}" AND {self._query_type_detection_extraction} {self._query_external}"""
 
         elif self.type_mobility:
             self._query_external = (
-                f""" '{self.type_mobility}' = "main_type_{self.type_aggregation}" """
+                f""" AND '{self.type_mobility}' = "main_type_{self.type_aggregation}" {self._query_external}"""
             )
 
         elif self._query_type_detection_extraction:
             self._query_external = (
-                f"{self._query_type_detection_extraction} {self._query_external}"
+                f" AND {self._query_type_detection_extraction} AND {self._query_external}"
             )
 
-        self._query_select = f"{self._query_select[:-4]} {self._query_external};"
+        self._query_select = f"{self._query_select} {self._query_external};"

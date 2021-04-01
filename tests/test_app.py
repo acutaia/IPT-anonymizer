@@ -132,6 +132,7 @@ class TestUser:
                 RequestType.stats_avg_space,
                 RequestType.stats_num_tracks,
             ):
+                print(mobility)
                 # Extract data
                 response = client.post(
                     "http://localhost/ipt_anonymizer/api/v1/user/extract",
@@ -151,7 +152,7 @@ class TestUser:
                         "request": mobility,
                         "company_code": "FAKE_NOT_FOUND",
                         "type_aggregation": "space",
-                        "type_mobility": "bicycle",
+                        "type_mobility": "airplane",
                     },
                 )
                 assert response.status_code == status.HTTP_404_NOT_FOUND
