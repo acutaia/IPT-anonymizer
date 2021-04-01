@@ -87,26 +87,26 @@ class AllPositions(
     def __init__(self, **data):
         super().__init__(**data)
         self._query_select = (
-            f"{self._query_select} {self._query_company_extraction} AND"
+            f"{self._query_select} {self._query_company_extraction}"
         )
         if self._query_start_time_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_start_time_extraction} AND"
+                f"{self._query_select} AND {self._query_start_time_extraction}"
             )
 
         if self._query_end_time_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_end_time_extraction} AND"
+                f"{self._query_select} AND {self._query_end_time_extraction}"
             )
 
         if self._query_start_coordinate_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_start_coordinate_extraction} AND"
+                f"{self._query_select} AND {self._query_start_coordinate_extraction}"
             )
 
         if self._query_end_coordinate_extraction:
             self._query_select = (
-                f"{self._query_select} {self._query_end_coordinate_extraction} AND"
+                f"{self._query_select} AND {self._query_end_coordinate_extraction}"
             )
 
         if self.type_mobility and self._query_type_detection_extraction:
@@ -122,4 +122,4 @@ class AllPositions(
                 f"""{self._query_external} AND '{self.type_mobility}' = "type" """
             )
 
-        self._query_select = f"{self._query_select[:-4]} {self._query_external};"
+        self._query_select = f"{self._query_select} {self._query_external};"
