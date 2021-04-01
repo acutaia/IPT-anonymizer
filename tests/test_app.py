@@ -23,6 +23,9 @@ Test app
     limitations under the License.
 """
 
+# Standard Library
+import uuid
+
 # Test
 from fastapi.testclient import TestClient
 
@@ -125,6 +128,17 @@ class TestUser:
         clear_test()
 
         with TestClient(app) as client:
+            # Insert other data in the database
+            USER_INPUT_DATA["journey_id"] = str(uuid.uuid4())
+            USER_INPUT_DATA["id"] = str(uuid.uuid4())
+
+            response = client.post(
+                "http://localhost/ipt_anonymizer/api/v1/user/store",
+                json=USER_INPUT_DATA,
+            )
+            assert response.status_code == status.HTTP_200_OK
+
+            # Try to extract data for every request type
             for mobility in (
                 RequestType.partial_mobility,
                 RequestType.complete_mobility,
@@ -155,18 +169,6 @@ class TestUser:
                     },
                 )
                 assert response.status_code == status.HTTP_404_NOT_FOUND
-
-            # try to extract a list of data
-            for mobility in (RequestType.partial_mobility, RequestType.all_positions):
-                # Extract data
-                response = client.post(
-                    "http://localhost/ipt_anonymizer/api/v1/user/extract",
-                    json={
-                        "request": mobility,
-                        "company_code": USER_INPUT_DATA["company_code"],
-                    },
-                )
-                assert response.status_code == status.HTTP_200_OK
 
             # try to extract data that aren't in the database
             response = client.post(
