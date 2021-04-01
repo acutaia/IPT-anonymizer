@@ -170,13 +170,13 @@ class TestUser:
                 )
                 assert response.status_code == status.HTTP_404_NOT_FOUND
 
-            # try to extract data that aren't in the database
+            # try to make an incorrect request
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/user/extract",
                 json={
-                    "request": "FAKE",
+                    "request": RequestType.stats_num_tracks,
                     "company_code": "FAKE_NOT_FOUND",
-                    "type_aggregation": "space",
+                    "wrong values": "fake"
                 },
             )
             assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
