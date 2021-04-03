@@ -22,7 +22,7 @@ from functools import lru_cache
 from typing import List
 
 # Third party
-from asyncpg import create_pool, Connection
+from asyncpg import create_pool, Connection, Record
 from asyncpg.exceptions import PostgresError
 from asyncpg.pool import Pool
 from fastapi import status, HTTPException
@@ -100,7 +100,7 @@ class DataBase:
             host=settings.postgres_host,
             port=settings.postgres_port,
             min_size=settings.connection_number,
-            max_size=settings.connection_number
+            max_size=settings.connection_number,
         )
 
     @classmethod
@@ -235,19 +235,320 @@ class DataBase:
                     [dict(res) for res in result]
                 )
             except PostgresError as error:
-                await logger.warning(
-                    msg={
-                        "query": query,
-                        "error": error.as_dict()
-                    }
-                )
+                await logger.warning(msg={"query": query, "error": error.as_dict()})
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail={
                         "resource": "USER",
                         "request": request,
                         "status": "Something went wrong extracting data",
-                    }
+                    },
+                )
+
+    @classmethod
+    async def extract_mobility_statistics(
+        cls, request: RequestType, conditions: str
+    ) -> list:
+        """
+        Extract mobility statistics from the database
+
+        :param request: type of statistics
+        :param conditions: requested conditions
+        :return: list of data
+        """
+        if request == RequestType.inter_modality_space:
+            return await cls.extract_space_statistics(conditions)
+        else:
+            return await cls.extract_time_statistics(conditions)
+
+    @classmethod
+    async def extract_space_statistics(cls, conditions: str) -> list:
+        """
+        Extract space statistics from the database
+
+        :param conditions: requested conditions
+        :return: list of data
+        """
+        logger = get_logger()
+        async with cls.pool.acquire() as conn:
+            try:
+                # generate first part of the first row
+                result_1 = await conn.fetch(
+                    f"""Select avg(aggregated.n_mobility_type),sum(aggregated.n_mobility_type)
+                    from (Select count(journey_id) as n_mobility_type
+                    from user_behaviours,
+                    (select journey_id as x
+                    from user_data
+                    where distance < 5000 and {conditions} ) as nested
+                    where journey_id = nested.x group by journey_id) as aggregated;"""
+                )
+                # The list of data will always have length 1
+                result_1 = dict(result_1[0])
+
+                # Check if there is at least one mobility
+                if result_1["sum"] is None:
+                    result_1["avg"] = 0
+                    result_1_2 = []
+
+                else:
+                    # generate second part of the first row
+                    result_1_2 = await conn.fetch(
+                        f"""Select distinct(aggregated.type),((sum(aggregated.n_mobility_type)/{int(result_1["sum"])})*100) as perc
+                        from
+                        (
+                        Select count(journey_id) as n_mobility_type, type
+                        from user_behaviours,
+                        (
+                        select journey_id as x
+                        from user_data
+                        where distance < 5000 and {conditions} ) as nested
+                        where journey_id = nested.x group by type) as aggregated
+                        group by aggregated.type;"""
+                    )
+
+                # first row complete
+                first_row = {
+                    "distance": "< 5 Km",
+                    "mob_type_per_journey": result_1["avg"],
+                    "mob_type": result_1_2,
+                }
+
+                # generate first part of the second row
+                result_2 = await conn.fetch(
+                    f"""Select avg(aggregated.n_mobility_type),sum(aggregated.n_mobility_type)
+                    from (Select count(journey_id) as n_mobility_type
+                    from user_behaviours,
+                    (select journey_id as x
+                    from user_data
+                    where distance BETWEEN 10000 AND 5000 and {conditions} ) as nested
+                    where journey_id = nested.x group by journey_id) as aggregated;"""
+                )
+                # The list of data will always have length 1
+                result_2 = dict(result_2[0])
+
+                # Check if there is at least one mobility
+                if result_2["sum"] is None:
+                    result_2["avg"] = 0
+                    result_2_2 = []
+
+                else:
+                    # generate second part of the second row
+                    result_2_2 = await conn.fetch(
+                        f"""Select distinct(aggregated.type),((sum(aggregated.n_mobility_type)/{int(result_2["sum"])})*100) as perc
+                        from
+                        (
+                        Select count(journey_id) as n_mobility_type, type
+                        from user_behaviours,
+                        (
+                        select journey_id as x
+                        from user_data
+                        where distance BETWEEN 10000 AND 5000 and {conditions} ) as nested
+                        where journey_id = nested.x group by type) as aggregated
+                        group by aggregated.type;"""
+                    )
+
+                # second row complete
+                second_row = {
+                    "distance": "5 Km - 10 Km",
+                    "mob_type_per_journey": result_2["avg"],
+                    "mob_type": result_2_2,
+                }
+
+                # generate first part of the third row
+                result_3 = await conn.fetch(
+                    f"""Select avg(aggregated.n_mobility_type),sum(aggregated.n_mobility_type)
+                    from (Select count(journey_id) as n_mobility_type
+                    from user_behaviours,
+                    (select journey_id as x
+                    from user_data
+                    where distance > 10000 and {conditions} ) as nested
+                    where journey_id = nested.x group by journey_id) as aggregated;"""
+                )
+                # The list of data will always have length 1
+                result_3 = dict(result_3[0])
+
+                # Check if there is at least one mobility
+                if result_3["sum"] is None:
+                    result_3["avg"] = 0
+                    result_3_2 = []
+
+                else:
+                    # generate second part of the third row
+                    result_3_2 = await conn.fetch(
+                        f"""Select distinct(aggregated.type),
+                        ((sum(aggregated.n_mobility_type)/{int(result_3["sum"])})*100) as perc
+                        from
+                        (
+                        Select count(journey_id) as n_mobility_type, type
+                        from user_behaviours,
+                        (
+                        select journey_id as x
+                        from user_data
+                        where distance > 10000 and {conditions} ) as nested
+                        where journey_id = nested.x group by type) as aggregated
+                        group by aggregated.type;"""
+                    )
+
+                # third row complete
+                third_row = {
+                    "distance": "> 10 Km",
+                    "mob_type_per_journey": result_3["avg"],
+                    "mob_type": result_3_2,
+                }
+
+                return [first_row, second_row, third_row]
+
+            except PostgresError as error:
+                await logger.warning(msg=error.as_dict())
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail={
+                        "resource": "USER",
+                        "request": RequestType.inter_modality_space,
+                        "status": "Something went wrong extracting data",
+                    },
+                )
+
+    @classmethod
+    async def extract_time_statistics(cls, conditions: str) -> list:
+        """
+        Extract time statistics from the database
+
+        :param conditions: requested conditions
+        :return: list of data
+        """
+        logger = get_logger()
+        async with cls.pool.acquire() as conn:
+            try:
+                # generate first part of the first row
+                result_1 = await conn.fetch(
+                    f"""Select avg(aggregated.n_mobility_type),sum(aggregated.n_mobility_type)
+                    from (Select count(journey_id) as n_mobility_type
+                    from user_behaviours,
+                    (select journey_id as x from user_data
+                    where elapsed_time::interval < '15 minutes'::interval and {conditions} ) as nested
+                    where journey_id = nested.x group by journey_id) as aggregated;"""
+                )
+                # The list of data will always have length 1
+                result_1 = dict(result_1[0])
+
+                # Check if there is at least one mobility
+                if result_1["sum"] is None:
+                    result_1["avg"] = 0
+                    result_1_2 = []
+
+                else:
+                    # generate second part of the first row
+                    result_1_2 = await conn.fetch(
+                        f"""Select distinct(aggregated.type),((sum(aggregated.n_mobility_type)/{result_1["sum"]})*100) as perc
+                        from (Select count(journey_id) as n_mobility_type, type 
+                        from user_behaviours,
+                        ( select journey_id as x from user_data where elapsed_time::interval < '15 minutes'::interval 
+                        and {conditions} ) as nested
+                        where journey_id = nested.x group by type) as aggregated
+                        group by aggregated.type;"""
+                    )
+
+                # first row complete
+                first_row = {
+                    "time": "< 15 min",
+                    "mob_type_per_journey": result_1["avg"],
+                    "mob_type": result_1_2,
+                }
+
+                # generate first part of the second row
+                result_2 = await conn.fetch(
+                    f"""Select avg(aggregated.n_mobility_type),sum(aggregated.n_mobility_type)
+                    from
+                    (Select count(journey_id) as n_mobility_type
+                    from user_behaviours,
+                    (select journey_id as x
+                    from user_data
+                    where elapsed_time::interval <= '30 minutes'::interval and elapsed_time::interval >= '15 minutes'::interval
+                    and {conditions} ) as nested
+                    where journey_id = nested.x group by journey_id) as aggregated;"""
+                )
+                # The list of data will always have length 1
+                result_2 = dict(result_2[0])
+
+                # Check if there is at least one mobility
+                if result_2["sum"] is None:
+                    result_2["avg"] = 0
+                    result_2_2 = []
+
+                else:
+                    # generate second part of the second row
+                    result_2_2 = await conn.fetch(
+                        f"""Select distinct(aggregated.type),((sum(aggregated.n_mobility_type)/{int(result_2["sum"])})*100) as perc
+                            from
+                            (
+                            Select count(journey_id) as n_mobility_type, type
+                            from user_behaviours,
+                            (
+                            select journey_id as x
+                            from user_data
+                            where elapsed_time::interval <= '30 minutes'::interval and elapsed_time::interval >= '15 minutes'::interval
+                            and {conditions} ) as nested
+                            where journey_id = nested.x group by type) as aggregated group by aggregated.type;"""
+                    )
+
+                # second row complete
+                second_row = {
+                    "time": "15 - 30 min",
+                    "mob_type_per_journey": result_2["avg"],
+                    "mob_type": result_2_2,
+                }
+
+                # generate first part of the third row
+                result_3 = await conn.fetch(
+                    f"""Select avg(aggregated.n_mobility_type),sum(aggregated.n_mobility_type)
+                    from (Select count(journey_id) as n_mobility_type
+                    from user_behaviours,
+                    (select journey_id as x from user_data
+                    where elapsed_time::interval > '30 minutes'::interval and {conditions} ) as nested
+                    where journey_id = nested.x group by journey_id) as aggregated;"""
+                )
+                # The list of data will always have length 1
+                result_3 = dict(result_3[0])
+
+                # Check if there is at least one mobility
+                if result_3["sum"] is None:
+                    result_3["avg"] = 0
+                    result_3_2 = []
+
+                else:
+                    # generate second part of the third row
+                    result_3_2 = await conn.fetch(
+                        f"""Select distinct(aggregated.type),((sum(aggregated.n_mobility_type)/{result_1["sum"]})*100) as perc
+                        from 
+                        (Select count(journey_id) as n_mobility_type, type
+                        from user_behaviours,
+                        (select journey_id as x
+                        from user_data
+                        where elapsed_time::interval > '30 minutes'::interval and {conditions}
+                        ) as nested
+                        where journey_id = nested.x group by type) as aggregated
+                        group by aggregated.type;"""
+                    )
+
+                # third row complete
+                third_row = {
+                    "time": "> 30 min",
+                    "mob_type_per_journey": result_3["avg"],
+                    "mob_type": result_3_2,
+                }
+
+                return [first_row, second_row, third_row]
+
+            except PostgresError as error:
+                await logger.warning(msg=error.as_dict())
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail={
+                        "resource": "USER",
+                        "request": RequestType.inter_modality_time,
+                        "status": "Something went wrong extracting data",
+                    },
                 )
 
     @classmethod
@@ -305,10 +606,10 @@ class DataBase:
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail={
-                            "resource": "IOT",
-                            "request": "extract observation_gep_id associated data",
-                            "status": "Something went wrong extracting data",
-                    }
+                        "resource": "IOT",
+                        "request": "extract observation_gep_id associated data",
+                        "status": "Something went wrong extracting data",
+                    },
                 )
 
 

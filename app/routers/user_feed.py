@@ -29,8 +29,9 @@ from fastapi.responses import ORJSONResponse
 
 # Internal
 from ..dependencies.query_builder import QueryBuilder, Query
-from ..internals.user_feed import store_user_feed, extract_user_info
+from ..internals.user_feed import store_user_feed, extract_user_info, extract_statistics
 from ..models.user_feed.user import UserFeedInternal
+from ..models.track import RequestType
 
 # --------------------------------------------------------------------------------------------
 
@@ -62,4 +63,10 @@ async def extract(extraction: Query = Depends(query_builder)):
     """
     This endpoints extracts user info
     """
+    if extraction.request in (
+        RequestType.inter_modality_space,
+        RequestType.inter_modality_time,
+    ):
+        return await extract_statistics(extraction.request, extraction.query)
+
     return await extract_user_info(extraction.request, extraction.query)

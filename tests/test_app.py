@@ -176,7 +176,22 @@ class TestUser:
                 json={
                     "request": RequestType.stats_num_tracks,
                     "company_code": "FAKE_NOT_FOUND",
-                    "wrong values": "fake"
+                    "wrong values": "fake",
                 },
             )
             assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+            # Check if statistic are extracted well
+            for statistic in (
+                RequestType.inter_modality_time,
+                RequestType.inter_modality_space,
+            ):
+                # Extract data
+                response = client.post(
+                    "http://localhost/ipt_anonymizer/api/v1/user/extract",
+                    json={
+                        "request": statistic,
+                        "company_code": USER_INPUT_DATA["company_code"],
+                    },
+                )
+                assert response.status_code == status.HTTP_200_OK

@@ -47,7 +47,7 @@ async def store_user_feed(user_feed: UserFeedInternal) -> dict:
 
 async def extract_user_info(request: RequestType, query: str) -> list:
     """
-    Extract ser info from the database
+    Extract user info from the database
 
     :param request: requested info
     :param query: database query
@@ -55,3 +55,13 @@ async def extract_user_info(request: RequestType, query: str) -> list:
     database = get_database()
     return await database.extract_user(request, query)
 
+
+async def extract_statistics(request: RequestType, conditions: str) -> list:
+    """
+    Extract statistics from the database
+
+    :param request: requested statistics
+    :param conditions: requested conditions
+    """
+    database = get_database()
+    return await database.extract_mobility_statistics(request, conditions)

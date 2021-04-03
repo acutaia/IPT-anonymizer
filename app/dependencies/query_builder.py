@@ -27,6 +27,8 @@ from ..models.model import OrjsonModel
 from ..models.extraction.data_extraction.all_positions import AllPositions
 from ..models.extraction.data_extraction.complete_mobility import CompleteMobility
 from ..models.extraction.data_extraction.input import InputJSONExtraction
+from ..models.extraction.data_extraction.inter_modality_space import InterModalitySpace
+from ..models.extraction.data_extraction.inter_modality_time import InterModalityTime
 from ..models.extraction.data_extraction.partial_mobility import PartialMobility
 from ..models.extraction.data_extraction.stats_num_tracks import StatsNumTracks
 from ..models.extraction.data_extraction.stats_avg_space import StatsAvgSpace
@@ -52,6 +54,8 @@ class QueryBuilder:
         RequestType.all_positions: AllPositions,
         RequestType.stats_num_tracks: StatsNumTracks,
         RequestType.stats_avg_space: StatsAvgSpace,
+        RequestType.inter_modality_space: InterModalitySpace,
+        RequestType.inter_modality_time: InterModalityTime,
     }
     """Request associated to a Model"""
 

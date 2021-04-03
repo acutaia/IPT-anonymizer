@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Inter_Modality_Time model
+Inter_Modality_Space model
 
 :author: Angelo Cutaia
 :copyright: Copyright 2021, Angelo Cutaia
@@ -37,7 +37,7 @@ from ..time import StartTimeExtraction, EndTimeExtraction
 # --------------------------------------------------------------------------------------------
 
 
-class InterModalityTime(
+class InterModalitySpace(
     StartTimeExtraction,
     EndTimeExtraction,
     StartCoordinatesExtraction,
