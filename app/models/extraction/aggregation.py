@@ -61,9 +61,7 @@ class AggregationExtract(OrjsonModel):
             if values["space_aggregation"] == values["time_aggregation"] and v is None:
                 return v
             else:
-                ValueError(
-                    "type_aggregation is not set"
-                )
+                ValueError("type_aggregation is not set")
 
     def __init__(self, **data):
         super().__init__(**data)

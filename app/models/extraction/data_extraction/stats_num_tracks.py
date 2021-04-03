@@ -80,10 +80,14 @@ class StatsNumTracks(
     def __init__(self, **data):
         super().__init__(**data)
         if self.type_aggregation == AggregationType.time:
-            self._query_select = f"{self._query_select_main_type_time} {self._query_company_extraction}"
+            self._query_select = (
+                f"{self._query_select_main_type_time} {self._query_company_extraction}"
+            )
             self._query_external = self._query_external_main_type_time
         else:
-            self._query_select = f"{self._query_select_main_type_space} {self._query_company_extraction}"
+            self._query_select = (
+                f"{self._query_select_main_type_space} {self._query_company_extraction}"
+            )
             self._query_external = self._query_external_main_type_space
 
         if self._query_start_time_extraction:
@@ -110,13 +114,9 @@ class StatsNumTracks(
             self._query_external = f""" AND '{self.type_mobility}' = "main_type_{self.type_aggregation}" AND {self._query_type_detection_extraction} {self._query_external}"""
 
         elif self.type_mobility:
-            self._query_external = (
-                f""" AND '{self.type_mobility}' = "main_type_{self.type_aggregation}" {self._query_external}"""
-            )
+            self._query_external = f""" AND '{self.type_mobility}' = "main_type_{self.type_aggregation}" {self._query_external}"""
 
         elif self._query_type_detection_extraction:
-            self._query_external = (
-                f" AND {self._query_type_detection_extraction} AND {self._query_external}"
-            )
+            self._query_external = f" AND {self._query_type_detection_extraction} AND {self._query_external}"
 
         self._query_select = f"{self._query_select} {self._query_external};"

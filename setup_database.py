@@ -117,6 +117,28 @@ class DataBase:
                 """
         )
 
+        await sys_conn.execute(
+
+            """CREATE INDEX user_data_index_b_tree on "user_data" (
+            distance,
+            elapsed_time,
+            start_lat,
+            start_lon,
+            end_lat,
+            end_lon,
+            start_date,
+            end_date);"""
+        )
+        for hash in (
+                "source_app",
+                "company_code",
+                "company_trip_type",
+                "main_type_space",
+                "main_type_time"
+        ):
+            await sys_conn.execute(f"""CREATE INDEX user_data_{hash} on "user_data" USING hash ({hash});"""
+        )
+
     @classmethod
     async def create_table_user_positions(cls, sys_conn: Connection):
         """
@@ -135,6 +157,14 @@ class DataBase:
                partial_distance integer
                );
                 """
+        )
+
+        await sys_conn.execute(
+            """CREATE INDEX user_positions_index_b_tree on "user_positions" (
+            time,
+            lat,
+            lon,
+            partial_distance);"""
         )
 
     @classmethod
@@ -187,6 +217,22 @@ class DataBase:
                );
                 """
         )
+
+        await sys_conn.execute(
+            """CREATE INDEX user_behaviours_index_b_tree on "user_behaviours" (
+            meters,
+            start_lat,
+            start_lon,
+            end_lat,
+            end_lon,
+            start_time,
+            end_time);"""
+        )
+
+        for hash in ("source_app", "mode", "type"):
+            await sys_conn.execute(
+                f"""CREATE INDEX user_behaviours_{hash} on "user_behaviours" USING hash ({hash});"""
+            )
 
     @classmethod
     async def create_table_iot_data(cls, sys_conn: Connection):

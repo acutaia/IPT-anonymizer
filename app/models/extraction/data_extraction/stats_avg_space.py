@@ -102,4 +102,6 @@ class StatsAvgSpace(
             self._query_external = (
                 f"{self._query_external} AND {self._query_type_detection_extraction}"
             )
-        self._query_select = f"{self._query_select} {self._query_external} {self._query_external_extra};"
+        self._query_select = (
+            f"{self._query_select} {self._query_external} {self._query_external_extra};"
+        )

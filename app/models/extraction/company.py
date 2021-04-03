@@ -46,4 +46,4 @@ class CompanyExtraction(OrjsonModel):
         if self.company_trip_type:
             self._query_company_extraction = f"company_code = '{self.company_code}' AND company_trip_type = '{self.company_trip_type}'"
         else:
-            self._query_company_extraction = f"company_code = '{self.company_code}'"
+            self._query_company_extraction = f"company_code = '{self.company_code}' "

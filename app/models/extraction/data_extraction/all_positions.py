@@ -86,9 +86,7 @@ class AllPositions(
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._query_select = (
-            f"{self._query_select} {self._query_company_extraction}"
-        )
+        self._query_select = f"{self._query_select} {self._query_company_extraction}"
         if self._query_start_time_extraction:
             self._query_select = (
                 f"{self._query_select} AND {self._query_start_time_extraction}"
