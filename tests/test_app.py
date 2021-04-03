@@ -31,6 +31,7 @@ from fastapi.testclient import TestClient
 
 # Third Party
 from fastapi import status
+import orjson
 
 # Internal
 from app.main import app
@@ -195,3 +196,15 @@ class TestUser:
                     },
                 )
                 assert response.status_code == status.HTTP_200_OK
+
+                # Extract data that aren't in the database
+                response = client.post(
+                    "http://localhost/ipt_anonymizer/api/v1/user/extract",
+                    json={
+                        "request": statistic,
+                        "company_code": "NOT_IN_THE_DATABASE",
+                    },
+                )
+                response_json = orjson.loads(response.content)
+                assert response_json["mob_type_per_journey"] == 0, "no data should be find"
+                assert response_json["mob_type"] == [], "no data should be find"

@@ -32,22 +32,6 @@ from pydantic import BaseSettings
 # -------------------------------------------------------------------
 
 
-class LbsSettings(BaseSettings):
-    get_route_url: str
-    post_route_url: str
-
-    class Config:
-        env_file = ".env"
-
-
-@lru_cache(maxsize=1)
-def get_lbs_settings() -> LbsSettings:
-    return LbsSettings()
-
-
-# -------------------------------------------------------------------
-
-
 class DatabaseSettings(BaseSettings):
     postgres_user: str
     postgres_pwd: str
