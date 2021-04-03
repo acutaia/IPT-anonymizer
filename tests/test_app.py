@@ -206,5 +206,6 @@ class TestUser:
                     },
                 )
                 response_json = orjson.loads(response.content)
-                assert response_json["mob_type_per_journey"] == 0, "no data should be find"
-                assert response_json["mob_type"] == [], "no data should be find"
+                for element in response_json:
+                    assert element["mob_type_per_journey"] == 0, "no data should be find"
+                    assert element["mob_type"] == [], "no data should be find"
