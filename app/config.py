@@ -66,3 +66,9 @@ def get_database_settings() -> DatabaseSettings:
 
 
 # -------------------------------------------------------------------
+
+class LoggerSettings(BaseSettings):
+    loglevel: str
+
+    class Config:
+        env_file = ".env"

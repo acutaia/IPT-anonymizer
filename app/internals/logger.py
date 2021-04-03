@@ -26,12 +26,18 @@ Logger package
 from functools import lru_cache
 
 # Third Party
-from aiologger.loggers.json import JsonLogger, Logger
+from aiologger.loggers.json import JsonLogger, LogLevel
+
+# Internal
+from ..config import LoggerSettings
 
 
 @lru_cache(maxsize=1)
-def get_logger() -> Logger:
+def get_logger() -> JsonLogger:
     """Instantiate app logger"""
+
     return JsonLogger.with_default_handlers(
-        name="IPT-anonymizer", serializer_kwargs={"indent": 4}
+        name="IPT-anonymizer",
+        serializer_kwargs={"indent": 4},
+        level=getattr(LogLevel, LoggerSettings().loglevel, "DEBUG")
     )
