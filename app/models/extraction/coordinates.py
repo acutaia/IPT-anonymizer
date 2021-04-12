@@ -41,7 +41,7 @@ class StartCoordinatesExtraction(OrjsonModel):
     """Starting latitude example=5.74235"""
     start_lon: Optional[float] = None
     """Starting longitude example=14.45236"""
-    start_radius: Optional[confloat(ge=100)] = None
+    start_radius: Optional[confloat(ge=100, le=20000)] = None
     """Starting radius with specified center in meters example=123.35161"""
 
     _query_start_coordinate_extraction: Optional[str] = None
@@ -77,7 +77,7 @@ class EndCoordinatesExtraction(OrjsonModel):
     """Ending latitude example=5.74235"""
     end_lon: Optional[float] = None
     """Ending longitude example=14.45236"""
-    end_radius: Optional[confloat(ge=100)] = None
+    end_radius: Optional[confloat(ge=100, le=20000)] = None
     """Ending radius with specified center in meters example=123.35161"""
 
     _query_end_coordinate_extraction: Optional[str] = None
