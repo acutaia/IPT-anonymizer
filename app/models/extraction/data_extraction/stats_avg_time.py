@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Stats_avg_space model
+Stats_avg_time model
 
 :author: Angelo Cutaia
 :copyright: Copyright 2021, Angelo Cutaia
@@ -39,7 +39,7 @@ from ...track import MobilityType
 # --------------------------------------------------------------------------------------------
 
 
-class StatsAvgSpace(
+class StatsAvgTime(
     StartTimeExtraction,
     EndTimeExtraction,
     StartCoordinatesExtraction,
@@ -56,7 +56,7 @@ class StatsAvgSpace(
     _query_type_mobility_extract: Optional[str] = PrivateAttr(None)
     _query_select: str = PrivateAttr(
         """
-        SELECT Distinct(type), avg(meters), count(journey_id)
+        SELECT Distinct(type), avg((end_time - start_time)/60000), count(journey_id)
         FROM user_behaviours,
         (SELECT journey_id as x FROM "user_data" WHERE
         """

@@ -32,6 +32,7 @@ from ..models.extraction.data_extraction.inter_modality_time import InterModalit
 from ..models.extraction.data_extraction.partial_mobility import PartialMobility
 from ..models.extraction.data_extraction.stats_num_tracks import StatsNumTracks
 from ..models.extraction.data_extraction.stats_avg_space import StatsAvgSpace
+from ..models.extraction.data_extraction.stats_avg_time import StatsAvgTime
 from ..models.track import RequestType
 
 
@@ -54,6 +55,7 @@ class QueryBuilder:
         RequestType.all_positions: AllPositions,
         RequestType.stats_num_tracks: StatsNumTracks,
         RequestType.stats_avg_space: StatsAvgSpace,
+        RequestType.stats_avg_time: StatsAvgTime,
         RequestType.inter_modality_space: InterModalitySpace,
         RequestType.inter_modality_time: InterModalityTime,
     }

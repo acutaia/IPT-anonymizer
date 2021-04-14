@@ -22,7 +22,7 @@ from functools import lru_cache
 from typing import List
 
 # Third party
-from asyncpg import create_pool, Connection, Record
+from asyncpg import create_pool, Connection
 from asyncpg.exceptions import PostgresError
 from asyncpg.pool import Pool
 from fastapi import status, HTTPException
@@ -70,8 +70,9 @@ class DataBase:
     no_format_user_extraction_needed = {
         RequestType.stats_num_tracks,
         RequestType.stats_avg_space,
+        RequestType.stats_avg_time,
     }
-    """No methods methods needed"""
+    """No methods for format needed"""
 
     _store_single_row = {
         "user_data": INSERT_USER_DATA_QUERY,
@@ -99,7 +100,7 @@ class DataBase:
             database=settings.postgres_db,
             host=settings.postgres_host,
             port=settings.postgres_port,
-            min_size=settings.connection_number,
+            min_size=5,
             max_size=settings.connection_number,
         )
 

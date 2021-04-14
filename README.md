@@ -4,5 +4,3 @@
 [![codecov](https://codecov.io/gh/acutaia/IPT-anonymizer/branch/main/graph/badge.svg?token=AOmd65cwjP)](https://codecov.io/gh/acutaia/IPT-anonymizer)
 
 ![image](static/cover.png)
-
-
