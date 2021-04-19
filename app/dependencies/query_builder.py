@@ -61,7 +61,7 @@ class QueryBuilder:
     }
     """Request associated to a Model"""
 
-    def __call__(self, extraction: InputJSONExtraction = Body(...)) -> Query:
+    async def __call__(self, extraction: InputJSONExtraction = Body(...)) -> Query:
         """Called by the Depends class from FastApi to inspect InputJSONExtraction Body"""
         try:
             query = Query.construct(
