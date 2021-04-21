@@ -48,6 +48,9 @@ class InputJSONExtraction(OrjsonModel):
     request: RequestType = ...
     """Typology of request"""
 
+    source_app: str = ...
+    "Source app"
+
     time_window_low: Optional[str] = None
     """Left time boundary"""
     time_window_high: Optional[str] = None

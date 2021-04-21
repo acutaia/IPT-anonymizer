@@ -40,12 +40,14 @@ from .constants import *
 
 class TestInterModalitySpace:
     def test_no_extra_request(self):
-        data = InterModalitySpace()
+        data = InterModalitySpace(source_app="travis")
         assert data._query_select is not None
 
     def test_start_time_extraction(self):
         data = InterModalitySpace(
-            start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+            source_app="travis",
+            start_time=START_TIME,
+            start_time_high_threshold=START_TIME_HIGH_THRESHOLD,
         )
 
         assert (
@@ -54,14 +56,18 @@ class TestInterModalitySpace:
         )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalitySpace(start_time=START_TIME)
+            InterModalitySpace(source_app="travis", start_time=START_TIME)
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
+            InterModalitySpace(
+                source_app="travis", start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+            )
 
     def test_end_time_extraction(self):
         data = InterModalitySpace(
-            end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD
+            source_app="travis",
+            end_time=END_TIME,
+            end_time_high_threshold=END_TIME_HIGH_THRESHOLD,
         )
 
         assert (
@@ -77,47 +83,58 @@ class TestInterModalitySpace:
 
     def test_start_coordinates_extraction(self):
         data = InterModalitySpace(
-            start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS
+            source_app="travis",
+            start_lat=START_LAT,
+            start_lon=START_LON,
+            start_radius=START_RADIUS,
         )
 
         assert data._query_start_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalitySpace(start_lat=START_LAT)
+            InterModalitySpace(source_app="travis", start_lat=START_LAT)
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(start_lon=START_LON)
+            InterModalitySpace(source_app="travis", start_lon=START_LON)
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(start_lat=START_LAT, start_lon=START_LON)
+            InterModalitySpace(
+                source_app="travis", start_lat=START_LAT, start_lon=START_LON
+            )
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(start_lon=START_LON, start_radius=START_RADIUS)
+            InterModalitySpace(
+                source_app="travis", start_lon=START_LON, start_radius=START_RADIUS
+            )
 
     def test_end_coordinates_extraction(self):
 
         data = InterModalitySpace(
-            end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS
+            source_app="travis", end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS
         )
         assert data._query_end_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalitySpace(end_lat=END_LAT)
+            InterModalitySpace(source_app="travis", end_lat=END_LAT)
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(end_lon=END_LON)
+            InterModalitySpace(source_app="travis", end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(end_lat=END_LAT, end_lon=END_LON)
+            InterModalitySpace(source_app="travis", end_lat=END_LAT, end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            InterModalitySpace(end_lon=END_LON, end_radius=END_RADIUS)
+            InterModalitySpace(
+                source_app="travis", end_lon=END_LON, end_radius=END_RADIUS
+            )
 
     def test_company_extraction(self):
         data = InterModalitySpace(
-            company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE
+            source_app="travis",
+            company_code=COMPANY_CODE,
+            company_trip_type=COMPANY_TRIP_TYPE,
         )
         assert (
             data._query_company_extraction
-            == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
+            == f"source_app = 'travis' AND company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
         )

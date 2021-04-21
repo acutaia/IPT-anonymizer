@@ -152,6 +152,7 @@ class TestUser:
                     "http://localhost/ipt_anonymizer/api/v1/user/extract",
                     json={
                         "request": mobility,
+                        "source_app": USER_INPUT_DATA["source_app"],
                         "company_code": USER_INPUT_DATA["company_code"],
                         "type_aggregation": "space",
                         "type_mobility": "bicycle",
@@ -165,6 +166,7 @@ class TestUser:
                     json={
                         "request": mobility,
                         "company_code": "FAKE_NOT_FOUND",
+                        "source_app": "travis",
                         "type_aggregation": "space",
                         "type_mobility": "airplane",
                     },
@@ -193,6 +195,7 @@ class TestUser:
                     json={
                         "request": statistic,
                         "company_code": USER_INPUT_DATA["company_code"],
+                        "source_app": USER_INPUT_DATA["source_app"],
                     },
                 )
                 assert response.status_code == status.HTTP_200_OK
@@ -203,9 +206,12 @@ class TestUser:
                     json={
                         "request": statistic,
                         "company_code": "NOT_IN_THE_DATABASE",
+                        "source_app": "travis",
                     },
                 )
                 response_json = orjson.loads(response.content)
                 for element in response_json:
-                    assert element["mob_type_per_journey"] == 0, "no data should be find"
+                    assert (
+                        element["mob_type_per_journey"] == 0
+                    ), "no data should be find"
                     assert element["mob_type"] == [], "no data should be find"

@@ -38,12 +38,14 @@ from .constants import *
 
 class TestStatsAvgSpace:
     def test_no_extra_request(self):
-        data = StatsAvgSpace()
+        data = StatsAvgSpace(source_app="travis")
         assert data._query_select is not None
 
     def test_start_time_extraction(self):
         data = StatsAvgSpace(
-            start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+            source_app="travis",
+            start_time=START_TIME,
+            start_time_high_threshold=START_TIME_HIGH_THRESHOLD,
         )
 
         assert (
@@ -52,14 +54,18 @@ class TestStatsAvgSpace:
         )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            StatsAvgSpace(start_time=START_TIME)
+            StatsAvgSpace(source_app="travis", start_time=START_TIME)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
+            StatsAvgSpace(
+                source_app="travis", start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+            )
 
     def test_end_time_extraction(self):
         data = StatsAvgSpace(
-            end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD
+            source_app="travis",
+            end_time=END_TIME,
+            end_time_high_threshold=END_TIME_HIGH_THRESHOLD,
         )
 
         assert (
@@ -68,64 +74,79 @@ class TestStatsAvgSpace:
         )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            StatsAvgSpace(end_time=END_TIME)
+            StatsAvgSpace(source_app="travis", end_time=END_TIME)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
+            StatsAvgSpace(
+                source_app="travis", end_time_high_threshold=END_TIME_HIGH_THRESHOLD
+            )
 
     def test_start_coordinates_extraction(self):
         data = StatsAvgSpace(
-            start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS
+            source_app="travis",
+            start_lat=START_LAT,
+            start_lon=START_LON,
+            start_radius=START_RADIUS,
         )
 
         assert data._query_start_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            StatsAvgSpace(start_lat=START_LAT)
+            StatsAvgSpace(source_app="travis", start_lat=START_LAT)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(start_lon=START_LON)
+            StatsAvgSpace(source_app="travis", start_lon=START_LON)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(start_lat=START_LAT, start_lon=START_LON)
+            StatsAvgSpace(source_app="travis", start_lat=START_LAT, start_lon=START_LON)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(start_lon=START_LON, start_radius=START_RADIUS)
+            StatsAvgSpace(
+                source_app="travis", start_lon=START_LON, start_radius=START_RADIUS
+            )
 
     def test_end_coordinates_extraction(self):
 
-        data = StatsAvgSpace(end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS)
+        data = StatsAvgSpace(
+            source_app="travis", end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS
+        )
         assert data._query_end_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            StatsAvgSpace(end_lat=END_LAT)
+            StatsAvgSpace(source_app="travis", end_lat=END_LAT)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(end_lon=END_LON)
+            StatsAvgSpace(source_app="travis", end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(end_lat=END_LAT, end_lon=END_LON)
+            StatsAvgSpace(source_app="travis", end_lat=END_LAT, end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            StatsAvgSpace(end_lon=END_LON, end_radius=END_RADIUS)
+            StatsAvgSpace(source_app="travis", end_lon=END_LON, end_radius=END_RADIUS)
 
     def test_company_extraction(self):
         data = StatsAvgSpace(
-            company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE
+            source_app="travis",
+            company_code=COMPANY_CODE,
+            company_trip_type=COMPANY_TRIP_TYPE,
         )
         assert (
             data._query_company_extraction
-            == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
+            == f"source_app = 'travis' AND company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
         )
 
     def test_type_detection_extraction(self):
-        data = StatsAvgSpace(type_mobility=TYPE_MOBILITY, type_detection=TYPE_DETECTION)
+        data = StatsAvgSpace(
+            source_app="travis",
+            type_mobility=TYPE_MOBILITY,
+            type_detection=TYPE_DETECTION,
+        )
         assert f"""'{TYPE_MOBILITY}' = "type" AND """ in data._query_external
         assert data._query_type_detection_extraction
 
-        data = StatsAvgSpace(type_mobility=TYPE_MOBILITY)
+        data = StatsAvgSpace(source_app="travis", type_mobility=TYPE_MOBILITY)
         assert f"""'{TYPE_MOBILITY}' = "type" """ in data._query_external
         assert data._query_type_detection_extraction is None
 
-        data = StatsAvgSpace(type_detection=TYPE_DETECTION)
+        data = StatsAvgSpace(source_app="travis", type_detection=TYPE_DETECTION)
         assert data._query_type_detection_extraction

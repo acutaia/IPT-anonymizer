@@ -34,6 +34,7 @@ from ..track import TypeOfTrack
 
 
 class CompanyExtraction(OrjsonModel):
+    source_app: str = ...
     company_code: str = ""
     """Permit the extraction of company related data"""
 
@@ -44,6 +45,6 @@ class CompanyExtraction(OrjsonModel):
     def __init__(self, **data):
         super().__init__(**data)
         if self.company_trip_type:
-            self._query_company_extraction = f"company_code = '{self.company_code}' AND company_trip_type = '{self.company_trip_type}'"
+            self._query_company_extraction = f"source_app = '{self.source_app}' AND company_code = '{self.company_code}' AND company_trip_type = '{self.company_trip_type}'"
         else:
-            self._query_company_extraction = f"company_code = '{self.company_code}' "
+            self._query_company_extraction = f"source_app = '{self.source_app}' AND company_code = '{self.company_code}' "

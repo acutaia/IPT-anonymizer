@@ -38,12 +38,14 @@ from .constants import *
 
 class TestInterModalityTime:
     def test_no_extra_request(self):
-        data = InterModalityTime()
+        data = InterModalityTime(source_app="travis")
         assert data._query_select is not None
 
     def test_start_time_extraction(self):
         data = InterModalityTime(
-            start_time=START_TIME, start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+            source_app="travis",
+            start_time=START_TIME,
+            start_time_high_threshold=START_TIME_HIGH_THRESHOLD,
         )
 
         assert (
@@ -52,14 +54,18 @@ class TestInterModalityTime:
         )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalityTime(start_time=START_TIME)
+            InterModalityTime(source_app="travis", start_time=START_TIME)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(start_time_high_threshold=START_TIME_HIGH_THRESHOLD)
+            InterModalityTime(
+                source_app="travis", start_time_high_threshold=START_TIME_HIGH_THRESHOLD
+            )
 
     def test_end_time_extraction(self):
         data = InterModalityTime(
-            end_time=END_TIME, end_time_high_threshold=END_TIME_HIGH_THRESHOLD
+            source_app="travis",
+            end_time=END_TIME,
+            end_time_high_threshold=END_TIME_HIGH_THRESHOLD,
         )
 
         assert (
@@ -68,54 +74,67 @@ class TestInterModalityTime:
         )
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalityTime(end_time=END_TIME)
+            InterModalityTime(source_app="travis", end_time=END_TIME)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(end_time_high_threshold=END_TIME_HIGH_THRESHOLD)
+            InterModalityTime(
+                source_app="travis", end_time_high_threshold=END_TIME_HIGH_THRESHOLD
+            )
 
     def test_start_coordinates_extraction(self):
         data = InterModalityTime(
-            start_lat=START_LAT, start_lon=START_LON, start_radius=START_RADIUS
+            source_app="travis",
+            start_lat=START_LAT,
+            start_lon=START_LON,
+            start_radius=START_RADIUS,
         )
 
         assert data._query_start_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalityTime(start_lat=START_LAT)
+            InterModalityTime(source_app="travis", start_lat=START_LAT)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(start_lon=START_LON)
+            InterModalityTime(source_app="travis", start_lon=START_LON)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(start_lat=START_LAT, start_lon=START_LON)
+            InterModalityTime(
+                source_app="travis", start_lat=START_LAT, start_lon=START_LON
+            )
 
         with pytest.raises(ValidationError):
-            InterModalityTime(start_lon=START_LON, start_radius=START_RADIUS)
+            InterModalityTime(
+                source_app="travis", start_lon=START_LON, start_radius=START_RADIUS
+            )
 
     def test_end_coordinates_extraction(self):
 
         data = InterModalityTime(
-            end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS
+            source_app="travis", end_lat=END_LAT, end_lon=END_LON, end_radius=END_RADIUS
         )
         assert data._query_end_coordinate_extraction
         # Both value must be set or unset
         with pytest.raises(ValidationError):
-            InterModalityTime(end_lat=END_LAT)
+            InterModalityTime(source_app="travis", end_lat=END_LAT)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(end_lon=END_LON)
+            InterModalityTime(source_app="travis", end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(end_lat=END_LAT, end_lon=END_LON)
+            InterModalityTime(source_app="travis", end_lat=END_LAT, end_lon=END_LON)
 
         with pytest.raises(ValidationError):
-            InterModalityTime(end_lon=END_LON, end_radius=END_RADIUS)
+            InterModalityTime(
+                source_app="travis", end_lon=END_LON, end_radius=END_RADIUS
+            )
 
     def test_company_extraction(self):
         data = InterModalityTime(
-            company_code=COMPANY_CODE, company_trip_type=COMPANY_TRIP_TYPE
+            source_app="travis",
+            company_code=COMPANY_CODE,
+            company_trip_type=COMPANY_TRIP_TYPE,
         )
         assert (
             data._query_company_extraction
-            == f"company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
+            == f"source_app = 'travis' AND company_code = '{COMPANY_CODE}' AND company_trip_type = '{COMPANY_TRIP_TYPE}'"
         )
