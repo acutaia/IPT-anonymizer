@@ -83,7 +83,7 @@ def all_positions_and_complete_mobility_format(record_list: List[dict]) -> list:
     :return: converted data
     """
     journey_id = record_list[0]["journey_id"]
-    record_list[0]["journey_id"] = uuid4()
+    record_list[0]["journey_id"] = str(uuid4())
     temp_obj = {journey_id: record_list[0]}
 
     for pos in range(1, len(record_list)):
@@ -94,7 +94,7 @@ def all_positions_and_complete_mobility_format(record_list: List[dict]) -> list:
             temp_obj[str(uuid4())] = record_list[pos]
         else:
             journey_id = record_list[pos]["journey_id"]
-            record_list[pos]["journey_id"] = uuid4()
+            record_list[pos]["journey_id"] = str(uuid4())
             temp_obj[journey_id] = record_list[pos]
 
     return [temp_obj[key] for key in temp_obj.keys()]
