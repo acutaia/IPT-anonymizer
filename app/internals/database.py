@@ -14,7 +14,7 @@ Database internals package
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,9 @@ Database internals package
 
 # Standard Library
 from typing import List
-import uuid
+
+# Third Party
+from fastuuid import uuid4
 
 # Internal
 from ..models.iot_feed.iot import IotInput
@@ -81,7 +83,7 @@ def all_positions_and_complete_mobility_format(record_list: List[dict]) -> list:
     :return: converted data
     """
     journey_id = record_list[0]["journey_id"]
-    record_list[0]["journey_id"] = uuid.uuid4()
+    record_list[0]["journey_id"] = uuid4()
     temp_obj = {journey_id: record_list[0]}
 
     for pos in range(1, len(record_list)):
@@ -89,10 +91,10 @@ def all_positions_and_complete_mobility_format(record_list: List[dict]) -> list:
         if record_list[pos]["journey_id"] in temp_obj.keys():
             journey_id = record_list[pos]["journey_id"]
             record_list[pos]["journey_id"] = temp_obj[journey_id]["journey_id"]
-            temp_obj[str(uuid.uuid4())] = record_list[pos]
+            temp_obj[str(uuid4())] = record_list[pos]
         else:
             journey_id = record_list[pos]["journey_id"]
-            record_list[pos]["journey_id"] = uuid.uuid4()
+            record_list[pos]["journey_id"] = uuid4()
             temp_obj[journey_id] = record_list[pos]
 
     return [temp_obj[key] for key in temp_obj.keys()]

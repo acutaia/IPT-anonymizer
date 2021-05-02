@@ -4,28 +4,18 @@ FROM python:3.9-slim
 # Set the working directory in the container
 WORKDIR /ipt_anonymizer
 
-# Copy the dependencies file to the working directory
-COPY requirements.txt .
-
-# Install dependencies
-RUN apt-get update && apt-get install gcc -y && apt-get clean
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-
-
-# Copy content of the application
+# Copy content of the application file to the working directory
+COPY .env requirements.txt server.py setup.py ./
 COPY app/ ./app
 COPY static/ ./static
-COPY .env .
-COPY server.py .
-COPY setup.py .
-COPY setup_database.py .
 
-# Build c extention
-RUN python3 setup.py build_ext --inplace
-
-# Setup the Database
-RUN python3 setup_database.py
+# Install dependencies
+RUN apt update && \
+apt install gcc -y && \
+apt clean  && \
+pip install --no-cache-dir --upgrade pip && \
+pip install --no-cache-dir -r requirements.txt && \
+python3 setup.py build_ext --inplace
 
 # command to run on container start
 CMD [ "python3", "./server.py" ]
