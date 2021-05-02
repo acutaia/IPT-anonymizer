@@ -22,7 +22,6 @@ install:
 before_script:
   - psql -c "ALTER USER postgres PASSWORD 'postgres';" -U postgres
   - python3 setup.py build_ext --inplace
-  - python3 setup_database.py
 
 script:
   - pytest --cov=app tests

@@ -14,7 +14,7 @@ App Settings
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,22 @@ from functools import lru_cache
 
 # Third Party
 from pydantic import BaseSettings
+
+# -------------------------------------------------------------------
+
+
+class LbsSettings(BaseSettings):
+    get_route_url: str
+    post_route_url: str
+
+    class Config:
+        env_file = ".env"
+
+
+@lru_cache(maxsize=1)
+def get_lbs_settings() -> LbsSettings:
+    return LbsSettings()
+
 
 # -------------------------------------------------------------------
 
@@ -50,6 +66,7 @@ def get_database_settings() -> DatabaseSettings:
 
 
 # -------------------------------------------------------------------
+
 
 class LoggerSettings(BaseSettings):
     loglevel: str

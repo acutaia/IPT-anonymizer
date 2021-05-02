@@ -1,9 +1,15 @@
 # App requirements
+Cython>=0.29.23
+fastapi>=0.63.0, <0.64
+fastuuid>=0.6.0
+aiofiles>=0.6.0, <0.7.0
+uvicorn[standard] >=0.13.4,<0.14.0
+orjson >=3.5.2,<4.0.0
+python-jose[cryptography]
+gunicorn>=20.1.0
+aiologger>=0.6.1
+aiohttp[speedups]
 asyncpg==0.21.0
-aiologger>=0.6.0
-Cython>=0.29.22
-fastapi[all]>=0.63.0
-gunicorn>=20.0.4
 
 # Testing requirements
 codecov>=2.1.11

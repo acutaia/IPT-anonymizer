@@ -14,7 +14,7 @@ Constants for testing the app
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,8 @@ Constants for testing the app
     limitations under the License.
 """
 
-# Standard Library
-import uuid
+# Third Party
+from fastuuid import uuid4
 
 # ---------------------------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ IoT_INPUT_DATA = {
         "Position": {"type": "Point", "coordinate": [59.338747, 18.067612]},
         "response": {"value": 6.8},
     },
-    "observationGEPid": str(uuid.uuid4()),
+    "observationGEPid": str(uuid4()),
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -89,13 +89,13 @@ USER_INPUT_DATA = {
             },
         ],
     },
-    "company_code": str(uuid.uuid4()),
+    "company_code": str(uuid4()),
     "company_trip_type": "",
     "distance": 1939,
     "elapsedTime": "0:16:15",
     "endDate": 1611820019151,
-    "id": str(uuid.uuid4()),
-    "journey_id": str(uuid.uuid4()),
+    "id": str(uuid4()),
+    "journey_id": str(uuid4()),
     "mainTypeSpace": "bicycle",
     "mainTypeTime": "bicycle",
     "sensors_information": [

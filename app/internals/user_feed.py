@@ -14,7 +14,7 @@ UserFeed utilities package
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,8 @@ import time
 
 # Internal
 from ..models.track import RequestType
-from ..models.user_feed.user import UserFeedInternal
+from ..models.security import Authenticity
+from ..models.user_feed.user import UserFeedInternal, PositionObject
 from ..db.postgresql import get_database
 
 # --------------------------------------------------------------------------------------------

@@ -9,7 +9,9 @@ Database utility functions
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-        http://www.apache.org/licenses/LICENSE-2.0
+
+        https://www.apache.org/licenses/LICENSE-2.0
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +24,8 @@ from functools import lru_cache
 from typing import List
 
 # Third party
-from asyncpg import create_pool, Connection
-from asyncpg.exceptions import PostgresError
+from asyncpg import create_pool, connect, Connection
+from asyncpg.exceptions import PostgresError, DuplicateDatabaseError, InvalidCatalogNameError
 from asyncpg.pool import Pool
 from fastapi import status, HTTPException
 
@@ -94,14 +96,234 @@ class DataBase:
         """
         settings = get_database_settings()
 
-        cls.pool = await create_pool(
-            user=settings.postgres_user,
-            password=settings.postgres_pwd,
-            database=settings.postgres_db,
-            host=settings.postgres_host,
-            port=settings.postgres_port,
-            min_size=5,
-            max_size=settings.connection_number,
+        try:
+            # Try to create a connection pool to the Database
+            cls.pool = await create_pool(
+                user=settings.postgres_user,
+                password=settings.postgres_pwd,
+                database=settings.postgres_db,
+                host=settings.postgres_host,
+                port=settings.postgres_port,
+                min_size=5,
+                max_size=settings.connection_number,
+            )
+
+        except InvalidCatalogNameError:
+            # Flag that indicates if the tables must be created
+            create_tables = True
+            # Connect to Database template
+            sys_conn = await connect(
+                host=settings.postgres_host,
+                user=settings.postgres_user,
+                port=settings.postgres_port,
+                password=settings.postgres_pwd,
+                database="template1",
+            )
+            try:
+                # Create Database
+                await sys_conn.execute(
+                    f'CREATE DATABASE "{settings.postgres_db}" OWNER "{settings.postgres_user}";'
+                )
+            except DuplicateDatabaseError:
+                # Another process created the database so set create_tables to False
+                create_tables = False
+
+            finally:
+                # Disconnect from database template
+                await sys_conn.close()
+
+            # Create a connection pool to the Database
+            cls.pool = await create_pool(
+                user=settings.postgres_user,
+                password=settings.postgres_pwd,
+                database=settings.postgres_db,
+                host=settings.postgres_host,
+                port=settings.postgres_port,
+                min_size=5,
+                max_size=settings.connection_number,
+            )
+
+            # Check if the tables must be created
+            if create_tables:
+                async with cls.pool.acquire() as connection:
+                    # Create tables
+                    await cls.__create_table_user_data(connection)
+                    await cls.__create_table_user_positions(connection)
+                    await cls.__create_table_user_sensors(connection)
+                    await cls.__create_table_user_behaviours(connection)
+                    await cls.__create_table_iot_data(connection)
+
+    @staticmethod
+    async def __create_table_user_data(sys_conn: Connection):
+        """
+        Create a table to store user data
+
+        :param sys_conn: connection to the database
+        """
+        await sys_conn.execute(
+            """
+               CREATE TABLE IF NOT EXISTS "user_data" (
+               journey_id text,
+               source_app text,
+               company_code text,
+               PRIMARY KEY (journey_id),
+               company_trip_type text,
+               distance integer,
+               elapsed_time text,
+               end_date bigint,
+               id text,
+               main_type_space text,
+               main_type_time text,
+               start_date bigint,
+               start_lat float,
+               start_lon float,
+               end_lat float,
+               end_lon float
+               );
+                """
+        )
+
+        await sys_conn.execute(
+            """CREATE INDEX user_data_index_b_tree on "user_data" (
+            distance,
+            elapsed_time,
+            start_lat,
+            start_lon,
+            end_lat,
+            end_lon,
+            start_date,
+            end_date);"""
+        )
+        for hash_key in (
+                "source_app",
+                "company_code",
+                "company_trip_type",
+                "main_type_space",
+                "main_type_time"
+        ):
+            await sys_conn.execute(
+                f"""CREATE INDEX user_data_{hash_key} on "user_data" USING hash ({hash_key});"""
+            )
+
+    @staticmethod
+    async def __create_table_user_positions(sys_conn: Connection):
+        """
+        Create a table to store user positions
+
+        :param sys_conn: connection to the database
+        """
+        await sys_conn.execute(
+            """CREATE TABLE IF NOT EXISTS "user_positions" (
+               journey_id text,
+               time bigint,
+               PRIMARY KEY (journey_id, time),
+               authenticity integer,
+               lat float,
+               lon float,
+               partial_distance integer
+               );
+                """
+        )
+
+        await sys_conn.execute(
+            """CREATE INDEX user_positions_index_b_tree on "user_positions" (
+            time,
+            lat,
+            lon,
+            partial_distance);"""
+        )
+
+    @staticmethod
+    async def __create_table_user_sensors(sys_conn: Connection):
+        """
+        Create a table to store user sensors
+
+        :param sys_conn: connection to the database
+        """
+        await sys_conn.execute(
+            """
+               CREATE TABLE IF NOT EXISTS "user_sensors" (
+               journey_id text,
+               time bigint,
+               name text,
+               data jsonb,
+               PRIMARY KEY (journey_id, time, name)
+               );
+                """
+        )
+
+    @staticmethod
+    async def __create_table_user_behaviours(sys_conn: Connection):
+        """
+        Create a table to store user behaviours
+
+        :param sys_conn: connection to the database
+        """
+        await sys_conn.execute(
+            """
+               CREATE TABLE IF NOT EXISTS "user_behaviours" (
+               journey_id text,
+               source_app text,
+               mode text,
+               pos integer,
+               type text,
+               PRIMARY KEY (journey_id, mode, pos),
+               meters integer,
+               accuracy float,
+               start_auth integer,
+               start_lat float,
+               start_lon float,
+               start_partial_distance integer,
+               start_time bigint,
+               end_auth float,
+               end_lat float,
+               end_lon float,
+               end_partial_distance integer,
+               end_time bigint 
+               );
+                """
+        )
+
+        await sys_conn.execute(
+            """CREATE INDEX user_behaviours_index_b_tree on "user_behaviours" (
+            meters,
+            start_lat,
+            start_lon,
+            end_lat,
+            end_lon,
+            start_time,
+            end_time);"""
+        )
+
+        for hash_key in ("source_app", "mode", "type"):
+            await sys_conn.execute(
+                f"""CREATE INDEX user_behaviours_{hash_key} on "user_behaviours" USING hash ({hash_key});"""
+            )
+
+    @staticmethod
+    async def __create_table_iot_data(sys_conn: Connection):
+        """
+        Create a table to store iot data
+
+        :param sys_conn: connection to the database
+        """
+        await sys_conn.execute(
+            """
+               CREATE TABLE IF NOT EXISTS "iot_data" (
+               result_time timestamp with time zone,
+               datastream int,
+               feature_of_interest int,
+               phenomenon_time timestamp with time zone,
+               observation_gep_id text,
+               result_auth integer,
+               value_type text,
+               position_type text,
+               position_lat float,
+               position_lon float,
+               response_value float,
+               PRIMARY KEY (observation_gep_id)
+               );
+                """
         )
 
     @classmethod

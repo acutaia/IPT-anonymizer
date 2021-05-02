@@ -14,7 +14,7 @@ Test app
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,9 @@ Test app
     limitations under the License.
 """
 
-# Standard Library
-import uuid
-
 # Test
 from fastapi.testclient import TestClient
+from fastuuid import uuid4
 
 # Third Party
 from fastapi import status
@@ -130,8 +128,8 @@ class TestUser:
 
         with TestClient(app) as client:
             # Insert other data in the database
-            USER_INPUT_DATA["journey_id"] = str(uuid.uuid4())
-            USER_INPUT_DATA["id"] = str(uuid.uuid4())
+            USER_INPUT_DATA["journey_id"] = str(uuid4())
+            USER_INPUT_DATA["id"] = str(uuid4())
 
             response = client.post(
                 "http://localhost/ipt_anonymizer/api/v1/user/store",
