@@ -104,7 +104,6 @@ class DataBase:
                 database=settings.postgres_db,
                 host=settings.postgres_host,
                 port=settings.postgres_port,
-                min_size=5,
                 max_size=settings.connection_number,
             )
 
@@ -139,7 +138,6 @@ class DataBase:
                 database=settings.postgres_db,
                 host=settings.postgres_host,
                 port=settings.postgres_port,
-                min_size=5,
                 max_size=settings.connection_number,
             )
 
