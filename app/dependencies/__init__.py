@@ -2,10 +2,10 @@
 Dependencies module
 
 :author: Angelo Cutaia
-:copyright: Copyright 2021, Angelo Cutaia
+:copyright: Copyright 2021, LINKS Foundation
 :version: 1.0.0
 ..
-    Copyright 2021 Angelo Cutaia
+    Copyright 2021 Links Foundation
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
