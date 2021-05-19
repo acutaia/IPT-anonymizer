@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """
 Database utility functions
+
 :author: Angelo Cutaia
-:copyright: Copyright 2021, Angelo Cutaia
+:copyright: Copyright 2021, LINKS Foundation
 :version: 1.0.0
+
 ..
-    Copyright 2021 Angelo Cutaia
+
+    Copyright 2021 LINKS Foundation
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
@@ -25,7 +29,11 @@ from typing import List
 
 # Third party
 from asyncpg import create_pool, connect, Connection
-from asyncpg.exceptions import PostgresError, DuplicateDatabaseError, InvalidCatalogNameError
+from asyncpg.exceptions import (
+    PostgresError,
+    DuplicateDatabaseError,
+    InvalidCatalogNameError,
+)
 from asyncpg.pool import Pool
 from fastapi import status, HTTPException
 
@@ -193,11 +201,11 @@ class DataBase:
             end_date);"""
         )
         for hash_key in (
-                "source_app",
-                "company_code",
-                "company_trip_type",
-                "main_type_space",
-                "main_type_time"
+            "source_app",
+            "company_code",
+            "company_trip_type",
+            "main_type_space",
+            "main_type_time",
         ):
             await sys_conn.execute(
                 f"""CREATE INDEX user_data_{hash_key} on "user_data" USING hash ({hash_key});"""
