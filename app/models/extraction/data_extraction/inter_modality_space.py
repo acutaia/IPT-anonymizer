@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Inter_Modality_Space model
 
