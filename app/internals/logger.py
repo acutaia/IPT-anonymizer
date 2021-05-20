@@ -22,6 +22,7 @@ Logger package
     limitations under the License.
 """
 # Standard Library
+import logging
 from functools import lru_cache
 
 # Third Party
@@ -34,7 +35,10 @@ from ..config import LoggerSettings
 @lru_cache(maxsize=1)
 def get_logger() -> JsonLogger:
     """Instantiate app logger"""
-
+    settings = LoggerSettings()
+    # Configure uvicorn logger
+    uvicorn_access_logger = logging.getLogger("uvicorn.access")
+    uvicorn_access_logger.setLevel(settings.loglevel)
     return JsonLogger.with_default_handlers(
         name="IPT-anonymizer",
         serializer_kwargs={"indent": 4},
